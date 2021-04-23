@@ -1,4 +1,8 @@
 require('dotenv').config();
+const TradePairUtil = require("./Utils/TradePairUtil");
+const Watcher = require("./Watcher");
+const Action = require("./Actions/DefaultAction");
+
 const ccxt = require ('ccxt');
 
 (async function () {
@@ -10,4 +14,12 @@ const ccxt = require ('ccxt');
     })
 
     console.log(binance.id, await binance.fetchBalance());
+
+    const pairsToWatch = TradePairUtil.parsePairList(process.env.PAIRS_TO_WATCH);
+
+    const action  = new Action();
+
+    const watcher = new Watcher(binance, pairsToWatch, action.action)
+
+    await watcher.watch();
 }) ();

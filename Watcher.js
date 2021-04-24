@@ -1,4 +1,7 @@
+let log = require("log");
+log = log.get('watcher');
 const TradesWatcher = require("./SpotWallet/TradesWatcher");
+const loader = require('./Utils/ConsoleLoader');
 
 class Watcher {
     constructor(cctx, pairsToWatch, onTrade = null) {
@@ -15,9 +18,11 @@ class Watcher {
     }
 
     async watch() {
-        console.log("Starting watcher for trade pairs, ", this.pairsToWatch.reduce((carry, pair) => {
-            return carry + ', ' + pair.toString();
-        }, ''));
+        this.pairsToWatch.map( pair => {
+            log.notice("Starting watcher for trade pair %s ", pair.toString('-'));
+        });
+
+        loader.start();
 
         while (true) {
             for (const watcher of this.watchers) {

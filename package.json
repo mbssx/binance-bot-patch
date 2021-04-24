@@ -12,6 +12,8 @@
   "dependencies": {
     "ccxt": "^1.48.34",
     "dotenv": "^8.2.0",
+    "log": "^6.0.0",
+    "log-node": "^7.0.0",
     "messaging-api-telegram": "^1.0.4"
   }
 }

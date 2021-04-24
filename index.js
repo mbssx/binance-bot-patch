@@ -1,9 +1,11 @@
 require('dotenv').config();
+require("log-node")();
 const TradePairUtil = require("./Utils/TradePairUtil");
 const Watcher = require("./Watcher");
 const Action = require("./Actions/DefaultAction");
 
 const ccxt = require ('ccxt');
+const BinanceTradePairUtil = require("./Utils/BinanceTradePairUtil");
 
 (async function () {
     let binance    = new ccxt.binance({
@@ -13,9 +15,11 @@ const ccxt = require ('ccxt');
         enableRateLimit: true
     })
 
-    console.log(binance.id, await binance.fetchBalance());
-
     const pairsToWatch = TradePairUtil.parsePairList(process.env.PAIRS_TO_WATCH);
+
+    if (!(await new BinanceTradePairUtil(binance).validatePairs(pairsToWatch))) {
+        throw Error("Some pairs are not available with binance, please fix this in .env and restart");
+    }
 
     const action  = new Action();
 

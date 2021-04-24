@@ -1,11 +1,15 @@
+const { TelegramClient } = require('messaging-api-telegram');
+
 class Telegram {
-    constructor(key) {
-        this.key = key;
+    constructor() {
+        this.client = new TelegramClient({
+            accessToken: process.env.TG_BOT_TOKEN,
+        });
     }
 
-    sendTradeMessage() {
-
+    async sendTradeMessage(trade) {
+        await this.client.sendMessage(process.env.TG_GROUP_ID, "I Don't know what to send right now without trade lol!!!");
     }
 }
 
-export default new Telegram;
+module.exports = new Telegram;

@@ -4,8 +4,8 @@ class Pair {
         this.quote = quote;
     }
 
-    toString() {
-        return `${this.base}${this.quote}`;
+    toString(glue = '') {
+        return `${this.base}${glue}${this.quote}`;
     }
 
     reverse() {

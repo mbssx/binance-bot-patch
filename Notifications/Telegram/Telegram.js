@@ -7,16 +7,8 @@ class Telegram {
         });
     }
 
-    async sendTradeMessage(trade, wallet = 'spot') {
-        await this.client.sendMessage(process.env.TG_GROUP_ID, `
-## Trade In ${wallet} Wallet ##\n\n
-Symbol: ${trade.info.symbol}
-Side: ${trade.side}
-Price: ${trade.price}
-Amount: ${trade.amount}
-Cost: ${trade.cost}
-DateTime: ${trade.datetime}
-        `);
+    async sendTradeMessage(tradeObj) {
+        await this.client.sendMessage(process.env.TG_GROUP_ID, tradeObj.formatTgMessage());
     }
 }
 

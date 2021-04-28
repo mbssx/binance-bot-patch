@@ -29,7 +29,7 @@ class Watcher {
                 const trades = await watcher.lookForNewTrades();
 
                 if (trades.length && typeof this.onTrade === "function") {
-                    await this.onTrade(trades);
+                    await this.onTrade(trades, watcher.pair, 'Spot');
                 }
             }
 

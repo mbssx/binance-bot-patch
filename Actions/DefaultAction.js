@@ -1,12 +1,16 @@
 const tg = require("../Notifications/Telegram/Telegram");
+
+let that;
+
 class DefaultAction {
     constructor() {
         this.tg = tg;
+        that = this;
     }
 
     async action(trades) {
         return trades.map(async trade => {
-            await this.individualAction(trade);
+            await that.individualAction(trade);
         })
     }
 

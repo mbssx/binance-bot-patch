@@ -9,8 +9,8 @@ const ccxt = require ('ccxt');
 class TradeBNBUSDT {
     constructor() {
         this.exchange = new ccxt.binance({
-            apiKey: process.env.API_KEY,
-            secret: process.env.API_SECRET,
+            apiKey: process.env.BINANCE_FUTURE_API_KEY,
+            secret: process.env.BINANCE_FUTURE_API_SECRET,
             timeout: 30000,
             enableRateLimit: true
         });

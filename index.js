@@ -8,12 +8,24 @@ const ccxt = require ('ccxt');
 const BinanceTradePairUtil = require("./Utils/BinanceTradePairUtil");
 
 (async function () {
-    let binance    = new ccxt.binance({
-        apiKey: process.env.API_KEY,
-        secret: process.env.API_SECRET,
+    const binance = new ccxt.binance({
+        apiKey: process.env.BINANCE_FUTURE_API_KEY,
+        secret: process.env.BINANCE_FUTURE_API_SECRET,
         timeout: 30000,
-        enableRateLimit: true
+        enableRateLimit: true,
     })
+
+    const binanceFuture = new ccxt.binance({
+        apiKey: process.env.BINANCE_FUTURE_API_KEY,
+        secret: process.env.BINANCE_FUTURE_API_SECRET,
+        timeout: 30000,
+        enableRateLimit: true,
+        defaultType: 'future'
+    })
+
+
+    // console.log(await binance.fetchPositions(undefined, undefined, undefined, { 'type': 'inverse' }));
+    // console.log(await binance.fetchBalance());
 
     const pairsToWatch = TradePairUtil.parsePairList(process.env.PAIRS_TO_WATCH);
 
@@ -21,7 +33,7 @@ const BinanceTradePairUtil = require("./Utils/BinanceTradePairUtil");
         throw Error("Some pairs are not available with binance, please fix this in .env and restart");
     }
 
-    const action  = new Action();
+    const action  = new Action(binance, binanceFuture);
 
     const watcher = new Watcher(binance, pairsToWatch, action.action)
 

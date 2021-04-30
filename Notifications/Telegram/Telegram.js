@@ -10,6 +10,10 @@ class Telegram {
     async sendTradeMessage(tradeObj) {
         await this.client.sendMessage(process.env.TG_GROUP_ID, tradeObj.formatTgMessage());
     }
+
+    async sendMessage(message) {
+        await this.client.sendMessage(process.env.TG_GROUP_ID, message);
+    }
 }
 
 module.exports = new Telegram;

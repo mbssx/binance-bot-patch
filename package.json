@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ccxt": "^1.48.34",
+    "ccxt": "^1.49.9",
     "dotenv": "^8.2.0",
     "log": "^6.0.0",
     "log-node": "^7.0.0",

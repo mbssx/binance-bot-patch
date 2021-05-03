@@ -9,9 +9,23 @@ class BinanceTradePairUtil {
 
     async fetchPairs() {
         // console.log(await this.cctx.fetchMarkets());
-        this.availablePairs = (await this.cctx.fetchMarkets()).map((pair) => {
-            return pair.id;
+        this.availablePairs = await this.cctx.fetchMarkets();
+    }
+
+    async getPairInfo(pair) {
+        if (!await this.validatePair(pair)) {
+            throw new Error(`Invalid/Unknown pair ${pair.toString()}`);
+        }
+
+        return this.availablePairs.find((aPair) => {
+            return aPair.id === pair.toString();
         })
+    }
+
+    async getMinNominalForPair(pair) {
+        return (await this.getPairInfo(pair)).info.filters.find((filter) => {
+            return filter.filterType === "MIN_NOTIONAL";
+        }).minNotional;
     }
 
     async validatePair(pair) {
@@ -19,7 +33,9 @@ class BinanceTradePairUtil {
             await this.fetchPairs();
         }
 
-        return this.availablePairs.indexOf(pair.toString()) !== -1;
+        return typeof this.availablePairs.find((aPair) => {
+            return aPair.id === pair.toString()
+        }) !== "undefined";
     }
 
     async validatePairs(pairs) {

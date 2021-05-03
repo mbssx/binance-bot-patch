@@ -7,11 +7,12 @@ const TradeExecutor = require("../FutureWallet/TradeExecutor");
 let that;
 
 class DefaultAction {
-    constructor(cctx, cctxFuture) {
+    constructor(cctx, cctxFuture, binanceTradePairUtil) {
         this.tg = tg;
         this.cctx = cctx;
         this.cctxFuture = cctxFuture;
-        this.tradeExecutor = new TradeExecutor(cctxFuture);
+        this.binanceTradePairUtil = binanceTradePairUtil;
+        this.tradeExecutor = new TradeExecutor(this.cctxFuture, binanceTradePairUtil);
         that = this;
     }
 
@@ -25,21 +26,27 @@ class DefaultAction {
         const tradeObj = new Trade(trade, pair, wallet);
         log.notice(tradeObj.formatConsoleMessage());
         await this.tg.sendTradeMessage(tradeObj);
-        this.tradeExecutor.replicateTrade(tradeObj).then(async (futureTrade) => {
-            console.log(futureTrade);
-            const futureTradeObj = new Trade(futureTrade, pair, 'Future');
-            await this.tg.sendTradeMessage(futureTradeObj);
-        }).catch(async (e) => {
+        const min = parseFloat(await this.binanceTradePairUtil.getMinNominalForPair(pair));
+        if (min > parseFloat(tradeObj.trade.cost)) {
             await this.tg.sendMessage(`
-### Error replicating trade in future wallet
+### Error replicating trade in future wallet - MIN_NOTIONAL
+
+MINIMUM: ${min} ${tradeObj.pair.quote}
+Last Trade: ${tradeObj.trade.cost} ${tradeObj.pair.quote}
+`);
+        } else {
+            this.tradeExecutor.replicateTrade(tradeObj).then(async (futureTrade) => {
+                console.log(futureTrade);
+                const futureTradeObj = new Trade(futureTrade, pair, 'Future');
+                await this.tg.sendTradeMessage(futureTradeObj);
+            }).catch(async (e) => {
+                await this.tg.sendMessage(`
+### Error replicating trade in future wallet - INSUFFICIENT_BALANCE
 
 ${e.message}
 `);
-        });
-        // Send TG message
-        // check if copy trade available
-        // check if copy trade available for this specific pair
-        // probably copy trade to future wallet
+            });
+        }
     }
 }
 

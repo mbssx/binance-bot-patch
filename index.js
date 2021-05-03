@@ -21,7 +21,9 @@ const BinanceTradePairUtil = require("./Utils/BinanceTradePairUtil");
         timeout: 30000,
         enableRateLimit: true,
         defaultType: 'future'
-    })
+    });
+
+    const binanceTradePairUtil = new BinanceTradePairUtil(binanceFuture)
 
 
     // console.log(await binance.fetchPositions(undefined, undefined, undefined, { 'type': 'inverse' }));
@@ -29,11 +31,11 @@ const BinanceTradePairUtil = require("./Utils/BinanceTradePairUtil");
 
     const pairsToWatch = TradePairUtil.parsePairList(process.env.PAIRS_TO_WATCH);
 
-    if (!(await new BinanceTradePairUtil(binance).validatePairs(pairsToWatch))) {
+    if (!(await binanceTradePairUtil.validatePairs(pairsToWatch))) {
         throw Error("Some pairs are not available with binance, please fix this in .env and restart");
     }
 
-    const action  = new Action(binance, binanceFuture);
+    const action  = new Action(binance, binanceFuture, binanceTradePairUtil);
 
     const watcher = new Watcher(binance, pairsToWatch, action.action)
 

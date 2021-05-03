@@ -28,6 +28,14 @@ class BinanceTradePairUtil {
         }).minNotional;
     }
 
+    async setLeverage(pair, leverage = 20) {
+        await this.cctx.fapiPrivatePostLeverage({
+            symbol: pair.toString(),
+            leverage: leverage,
+            timestamp: new Date().getTime()
+        });
+    }
+
     async validatePair(pair) {
         if (this.availablePairs.length === 0) {
             await this.fetchPairs();

@@ -14,6 +14,7 @@ Price: ${this.trade.price} ${this.pair.quote}/${this.pair.base}
 Amount: ${this.trade.amount} ${this.pair.base}
 Cost: ${this.trade.cost} ${this.pair.quote}
 DateTime: ${this.trade.datetime}
+Status: ${this.trade.status}
         `;
     }
 

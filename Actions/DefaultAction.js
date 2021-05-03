@@ -36,7 +36,6 @@ Last Trade: ${tradeObj.trade.cost} ${tradeObj.pair.quote}
 `);
         } else {
             this.tradeExecutor.replicateTrade(tradeObj).then(async (futureTrade) => {
-                console.log(futureTrade);
                 const futureTradeObj = new Trade(futureTrade, pair, 'Future');
                 await this.tg.sendTradeMessage(futureTradeObj);
             }).catch(async (e) => {

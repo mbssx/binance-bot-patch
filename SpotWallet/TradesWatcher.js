@@ -7,7 +7,7 @@ class TradesWatcher {
 
     async lookForNewTrades() {
         const trades = await this.cctx.fetchMyTrades(this.pair.toString('/'), this.since);
-        this.since = new Date().getTime();
+        this.since = new Date().getTime() + 1000;
         return trades;
     }
 }

@@ -23,6 +23,9 @@ const BinanceTradePairUtil = require("./Utils/BinanceTradePairUtil");
         defaultType: 'future'
     });
 
+    // console.log((await binanceFuture.fapiPublicGetExchangeInfo()).symbols.filter(symbol => symbol.symbol));
+
+
     const binanceTradePairUtil = new BinanceTradePairUtil(binanceFuture)
 
 

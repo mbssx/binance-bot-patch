@@ -3,6 +3,7 @@ log = log.get('default-action');
 const tg = require("../Notifications/Telegram/Telegram");
 const Trade = require("../Helpers/Trade");
 const TradeExecutor = require("../FutureWallet/TradeExecutor");
+const FutureTrade = require('../Helpers/FutureTrade');
 
 let that;
 
@@ -36,9 +37,10 @@ Last Trade: ${tradeObj.trade.cost} ${tradeObj.pair.quote}
 `);
         } else {
             this.tradeExecutor.replicateTrade(tradeObj).then(async (futureTrade) => {
-                const futureTradeObj = new Trade(futureTrade, pair, 'Future');
+                const futureTradeObj = new FutureTrade(futureTrade, pair, 'Future');
                 await this.tg.sendTradeMessage(futureTradeObj);
             }).catch(async (e) => {
+                console.log(e);
                 await this.tg.sendMessage(`
 ### Error replicating trade in future wallet - INSUFFICIENT_BALANCE
 

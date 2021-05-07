@@ -28,7 +28,7 @@ class TradeExecutor {
             symbol: tradeObj.pair.toString(),
             side: tradeObj.trade.side.toUpperCase(),
             type: 'MARKET',
-            quantity: parseFloat(tradeObj.trade.amount).toFixed(precision.quantityPrecision),
+            quantity: parseFloat(tradeObj.trade.amount*(process.env.MULTIPLIER_IN_FUTURE_TRADES)).toFixed(precision.quantityPrecision),
             timestamp: new Date().getTime()
         });
     }

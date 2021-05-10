@@ -6,7 +6,7 @@ class TradeExecutor {
         that = this;
     }
 
-    async getPrecision(pair) {
+    async getPrecisionInFuture(pair) {
         const data = await that.cctx.fapiPublicGetExchangeInfo();
         const info = data.symbols.filter((symbol) => symbol.symbol === pair.toString());
 
@@ -23,12 +23,33 @@ class TradeExecutor {
     }
 
     async replicateTrade(tradeObj) {
-        const precision = await that.getPrecision(tradeObj.pair);
+        const precision = await that.getPrecisionInFuture(tradeObj.pair);
         return that.cctx.fapiPrivatePostOrder({
             symbol: tradeObj.pair.toString(),
             side: tradeObj.trade.side.toUpperCase(),
             type: 'MARKET',
             quantity: parseFloat(tradeObj.trade.amount*(process.env.MULTIPLIER_IN_FUTURE_TRADES)).toFixed(precision.quantityPrecision),
+            timestamp: new Date().getTime()
+        });
+    }
+
+    async checkPairInMargin(pair) {
+        const data = await that.cctx.sapiGetMarginAllPairs();
+        return data.filter((sPair) => {
+            return sPair.symbol === pair.toString() && sPair.isMarginTrade;
+        }).length
+    }
+
+    async createShortTrade(tradeObj) {
+        if (!(await that.checkPairInMargin(tradeObj.pair))) {
+            throw new Error('Pair is not available in margin market or margin is not allowed on pair')
+        }
+
+        return await that.cctx.sapiPostMarginOrder({
+            symbol: tradeObj.pair.toString(),
+            side: tradeObj.trade.side.toUpperCase(),
+            type: 'MARKET',
+            quantity: tradeObj.trade.amount,
             timestamp: new Date().getTime()
         });
     }

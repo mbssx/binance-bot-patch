@@ -23,14 +23,8 @@ const BinanceTradePairUtil = require("./Utils/BinanceTradePairUtil");
         defaultType: 'future'
     });
 
-    // console.log((await binanceFuture.fapiPublicGetExchangeInfo()).symbols.filter(symbol => symbol.symbol));
-
-
     const binanceTradePairUtil = new BinanceTradePairUtil(binanceFuture)
 
-
-    // console.log(await binance.fetchPositions(undefined, undefined, undefined, { 'type': 'inverse' }));
-    // console.log(await binance.fetchBalance());
 
     const pairsToWatch = TradePairUtil.parsePairList(process.env.PAIRS_TO_WATCH);
 

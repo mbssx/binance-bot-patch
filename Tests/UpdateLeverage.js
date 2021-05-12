@@ -19,7 +19,7 @@ class UpdateLeverage {
         this.pair = new Pair('BNB', 'USDT');
     }
 
-    async updateLeverage(leverage = 10) {
+    async updateLeverage(leverage = 1) {
         return await this.exchange.fapiPrivatePostLeverage({
             symbol: this.pair.toString(),
             leverage: leverage,

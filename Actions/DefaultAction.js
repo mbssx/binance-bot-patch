@@ -19,7 +19,12 @@ class DefaultAction {
 
     async action(trades, pair, wallet) {
         return trades.map(async trade => {
-            await that.individualAction(trade, pair, wallet);
+            try {
+                await that.individualAction(trade, pair, wallet);
+            } catch (e) {
+                console.log("Something went wrong in action")
+                console.log(e.message);
+            }
         })
     }
 

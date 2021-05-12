@@ -46,7 +46,9 @@ class TradeExecutor {
         }
 
         return await that.cctx.sapiPostMarginOrder({
+            isolatedSymbol: tradeObj.pair.toString(),
             symbol: tradeObj.pair.toString(),
+            isIsolated: false,
             side: tradeObj.trade.side.toUpperCase(),
             type: 'MARKET',
             quantity: tradeObj.trade.amount,

@@ -1,11 +1,21 @@
 require('dotenv').config();
 require("log-node")();
+const http = require("http")
 const TradePairUtil = require("./Utils/TradePairUtil");
 const Watcher = require("./Watcher");
 const Action = require("./Actions/DefaultAction");
 
 const ccxt = require ('ccxt');
 const BinanceTradePairUtil = require("./Utils/BinanceTradePairUtil");
+
+const port = process.env.PORT || 3000;
+
+http.createServer(function(request, response) {
+            response.writeHead(200);
+            response.write("Entropy governs our universe, but this action you took randomly is probably redundant.");
+            response.end();
+}).listen(port);
+
 
 (async function () {
     const binance = new ccxt.binance({
@@ -22,6 +32,11 @@ const BinanceTradePairUtil = require("./Utils/BinanceTradePairUtil");
         enableRateLimit: true,
         defaultType: 'future'
     });
+
+    // const data = await binance.sapiGetMarginAccount();
+
+    // console.log(data);
+    // process.exit();
 
     const binanceTradePairUtil = new BinanceTradePairUtil(binanceFuture)
 

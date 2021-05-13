@@ -24,6 +24,13 @@ class TradeExecutor {
 
     async replicateTrade(tradeObj) {
         const precision = await that.getPrecisionInFuture(tradeObj.pair);
+
+        await that.cctx.fapiPrivatePostLeverage({
+            symbol: tradeObj.pair.toString(),
+            leverage: process.env.FUTURE_WALLET_LEVERAGE || 20,
+            timestamp: new Date().getTime()
+        });
+
         return that.cctx.fapiPrivatePostOrder({
             symbol: tradeObj.pair.toString(),
             side: tradeObj.trade.side.toUpperCase(),

@@ -55,7 +55,7 @@ class TradeExecutor {
         }
     }
 
-    async closeCurrentOpenLongPosition(tradeObj) {
+    async closeCurrentOpenPosition(tradeObj) {
         const positions = await that.cctx.fapiPrivateV2GetPositionRisk({
             symbol: tradeObj.pair.toString()
         });
@@ -66,11 +66,12 @@ class TradeExecutor {
 
         const bothTypePosition = bothTypePositions[0];
 
-        if(parseFloat(bothTypePosition['positionAmt']) > 0) {
+        if(
+            (parseFloat(bothTypePosition['positionAmt']) > 0 && tradeObj.trade.side.toUpperCase() === "SELL")
+            || (parseFloat(bothTypePosition['positionAmt']) < 0 && tradeObj.trade.side.toUpperCase() === "BUY")
+        ) {
 
             await that.changePositionSideToBoth();
-
-            console.log(tradeObj.trade.side.toUpperCase(), "meeee");
 
             await that.updateLeverage(bothTypePosition['leverage'], tradeObj.pair);
 
@@ -79,7 +80,7 @@ class TradeExecutor {
                 side: tradeObj.trade.side.toUpperCase(),
                 type: 'MARKET',
                 // positionSide: 'SHORT',
-                quantity: bothTypePosition['positionAmt'],
+                quantity: parseFloat(bothTypePosition['positionAmt']) < 0 ? parseFloat(bothTypePosition['positionAmt']) * -1 : bothTypePosition['positionAmt'],
                 timestamp: new Date().getTime()
             });
         }

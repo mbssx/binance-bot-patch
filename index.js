@@ -33,9 +33,12 @@ http.createServer(function(request, response) {
         defaultType: 'future'
     });
 
-    // const data = await binance.sapiGetMarginAccount();
-
-    // console.log(data);
+    // const positions = await binanceFuture.fapiPrivateV2GetPositionRisk({
+    //     symbol: "BNBUSDT"
+    // });
+    //
+    // console.log(positions);
+    //
     // process.exit();
 
     const binanceTradePairUtil = new BinanceTradePairUtil(binanceFuture)

@@ -5,7 +5,7 @@ const loader = require('./Utils/ConsoleLoader');
 
 class Watcher {
     constructor(cctx, pairsToWatch, onTrade = null) {
-        this.timer = 5000; // run watcher each 5 second
+        this.timer = process.env.WATCH_FREQUENCY || 5000; // run watcher each 5 second
         this.cctx = cctx;
         this.pairsToWatch = pairsToWatch;
         this.onTrade = onTrade;

@@ -23,7 +23,7 @@ class TradeBNBUSDT {
     }
 
     async getUSDTFromBNB() {
-        await this.exchange.createMarketOrder(this.pair.toString('/'), 'sell', (await this.getBalance(this.pair.base)), 500, this.params);
+        await this.exchange.createMarketOrder(this.pair.toString('/'), 'sell', 0.1, 500, this.params);
     }
 
     async getBNBFromUSDT() {

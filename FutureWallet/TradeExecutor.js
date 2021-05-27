@@ -22,14 +22,18 @@ class TradeExecutor {
         }
     }
 
+    async updateLeverage(leverage, pair) {
+        await that.cctx.fapiPrivatePostLeverage({
+            symbol: pair.toString(),
+            leverage: leverage,
+            timestamp: new Date().getTime()
+        });
+    }
+
     async replicateTrade(tradeObj) {
         const precision = await that.getPrecisionInFuture(tradeObj.pair);
 
-        await that.cctx.fapiPrivatePostLeverage({
-            symbol: tradeObj.pair.toString(),
-            leverage: process.env.FUTURE_WALLET_LEVERAGE || 20,
-            timestamp: new Date().getTime()
-        });
+        await that.updateLeverage(process.env.FUTURE_WALLET_LEVERAGE || 20, tradeObj.pair);
 
         return that.cctx.fapiPrivatePostOrder({
             symbol: tradeObj.pair.toString(),
@@ -40,27 +44,49 @@ class TradeExecutor {
         });
     }
 
-    async checkPairInMargin(pair) {
-        const data = await that.cctx.sapiGetMarginAllPairs();
-        return data.filter((sPair) => {
-            return sPair.symbol === pair.toString() && sPair.isMarginTrade;
-        }).length
+    async changePositionSideToBoth() {
+        try {
+            await that.cctx.fapiPrivatePostPositionSideDual({
+                dualSidePosition: false,
+                timestamp: new Date().getTime()
+            });
+        } catch (e) {
+            console.log(e.message);
+        }
     }
 
-    async createShortTrade(tradeObj) {
-        if (!(await that.checkPairInMargin(tradeObj.pair))) {
-            throw new Error('Pair is not available in margin market or margin is not allowed on pair')
+    async closeCurrentOpenPosition(tradeObj) {
+        const positions = await that.cctx.fapiPrivateV2GetPositionRisk({
+            symbol: tradeObj.pair.toString()
+        });
+
+        const bothTypePositions = positions.filter(position => position['positionSide'] === "BOTH");
+
+        if (!bothTypePositions.length) return tradeObj;
+
+        const bothTypePosition = bothTypePositions[0];
+
+        if(
+            (parseFloat(bothTypePosition['positionAmt']) > 0 && tradeObj.trade.side.toUpperCase() === "SELL")
+            || (parseFloat(bothTypePosition['positionAmt']) < 0 && tradeObj.trade.side.toUpperCase() === "BUY")
+        ) {
+
+            await that.changePositionSideToBoth();
+
+            await that.updateLeverage(bothTypePosition['leverage'], tradeObj.pair);
+
+            await that.cctx.fapiPrivatePostOrder({
+                symbol: tradeObj.pair.toString(),
+                side: tradeObj.trade.side.toUpperCase(),
+                type: 'MARKET',
+                // positionSide: 'SHORT',
+                quantity: parseFloat(bothTypePosition['positionAmt']) < 0 ? parseFloat(bothTypePosition['positionAmt']) * -1 : bothTypePosition['positionAmt'],
+                timestamp: new Date().getTime()
+            });
         }
 
-        return await that.cctx.sapiPostMarginOrder({
-            isolatedSymbol: tradeObj.pair.toString(),
-            symbol: tradeObj.pair.toString(),
-            isIsolated: false,
-            side: tradeObj.trade.side.toUpperCase(),
-            type: 'MARKET',
-            quantity: tradeObj.trade.amount,
-            timestamp: new Date().getTime()
-        });
+        return tradeObj
+
     }
 }
 

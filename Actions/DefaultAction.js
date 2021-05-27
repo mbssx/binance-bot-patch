@@ -41,22 +41,21 @@ MINIMUM: ${min} ${tradeObj.pair.quote}
 Last Trade: ${tradeObj.trade.cost} ${tradeObj.pair.quote}
 `);
         } else {
-            this.tradeExecutor.replicateTrade(tradeObj).then(async (futureTrade) => {
-                const futureTradeObj = new FutureTrade(futureTrade, pair, 'Future');
-                await this.tg.sendTradeMessage(futureTradeObj);
-                return [tradeObj, futureTrade];
-            }).then(async ([tradeObj, futureTrade]) => {
-                const shortTrade = await this.tradeExecutor.createShortTrade(tradeObj);
-                // await this.tg.sendTradeMessage(futureTradeObj);
-                console.log(shortTrade);
-            }).catch(async (e) => {
-                console.log(e);
-                await this.tg.sendMessage(`
+            this.tradeExecutor.closeCurrentOpenPosition(tradeObj)
+                .then(async (tradeObj) => this.tradeExecutor.replicateTrade(tradeObj))
+                .then(async (futureTrade) => {
+                    const futureTradeObj = new FutureTrade(futureTrade, pair, 'Future');
+                    await this.tg.sendTradeMessage(futureTradeObj);
+                    return [tradeObj, futureTrade];
+                })
+                .catch(async (e) => {
+                    console.log(e);
+                    await this.tg.sendMessage(`
 ### Error replicating trade in future wallet - INSUFFICIENT_BALANCE
 
 ${e.message}
 `);
-            });
+                });
         }
     }
 }

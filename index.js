@@ -21,14 +21,14 @@ http.createServer(function(request, response) {
     const binance = new ccxt.binance({
         apiKey: process.env.BINANCE_FUTURE_API_KEY,
         secret: process.env.BINANCE_FUTURE_API_SECRET,
-        timeout: 30000,
+        timeout: process.env.API_TIMEOUT || 30000,
         enableRateLimit: true,
     })
 
     const binanceFuture = new ccxt.binance({
         apiKey: process.env.BINANCE_FUTURE_API_KEY,
         secret: process.env.BINANCE_FUTURE_API_SECRET,
-        timeout: 30000,
+        timeout: process.env.API_TIMEOUT || 30000,
         enableRateLimit: true,
         defaultType: 'future'
     });
